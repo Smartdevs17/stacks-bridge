@@ -25,3 +25,33 @@
 (define-read-only (is-btc-tx-processed (txid (buff 32)))
     (default-to false (map-get? processed-btc-txs txid))
 )
+
+;; Public: Lock BTC (Peg-In)
+;; In production, this would verify the Merkle proof of the BTC tx.
+(define-public (lock-btc (btc-txid (buff 32)) (amount uint) (recipient principal))
+    (begin
+        (asserts! (not (var-get is-paused)) err-paused)
+        (asserts! (not (is-btc-tx-processed btc-txid)) err-tx-already-processed)
+        (asserts! (> amount u0) err-invalid-amount)
+
+        ;; Mark TX as processed
+        (map-set processed-btc-txs btc-txid true)
+        
+        ;; Update global tally
+        (var-set total-locked-sats (+ (var-get total-locked-sats) amount))
+        
+        ;; Log the Peg-In event
+        (print {
+            event: "btc-peg-in",
+            txid: btc-txid,
+            amount: amount,
+            recipient: recipient,
+            total-locked: (var-get total-locked-sats)
+        })
+        
+        ;; In a full implementation, we would mint xBTC or sBTC here
+        ;; (contract-call? .wrapped-btc mint amount recipient)
+        
+        (ok true)
+    )
+)

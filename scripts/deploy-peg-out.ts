@@ -8,7 +8,7 @@ import * as fs from 'fs';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 
-dotenv.config({ path: '../.env' });
+dotenv.config({ path: '.env' });
 
 async function deployPegOut() {
   const privateKey = process.env.PRIVATE_KEY;

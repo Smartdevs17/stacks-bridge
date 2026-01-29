@@ -8,7 +8,8 @@ import * as fs from 'fs';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 
-dotenv.config({ path: '../.env' }); // Load from root or local (adjust path if needed)
+dotenv.config({ path: '.env' });
+ // Load from root or local (adjust path if needed)
 
 async function deployBridge() {
   const privateKey = process.env.PRIVATE_KEY;
